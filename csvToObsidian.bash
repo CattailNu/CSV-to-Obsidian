@@ -183,7 +183,7 @@ do
     do
       if [ ! "${array[i]}" == "" ]
       then
-        if [ "${array[i]}" != "${FIRSTLINE[i]}" ]
+        if [ ! "${array[i]}" == "${FIRSTLINE[i]}" ]
         then
           echo "[[${array[i]}]]" >> "md/${FIRSTLINE[i]}.md"
         fi
