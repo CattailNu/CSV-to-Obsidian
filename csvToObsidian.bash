@@ -162,9 +162,12 @@ do
     then
       for element2 in "${array[@]}"
       do
-        if [[ "$element" != "$element2" ]]
+
+        if [ ! "$element2" == "" ]
         then
-          if [ ! "$element2" == "" ]
+          el=$(echo "$element" | tr '[:upper:]' '[:lower:]')
+          el2=$(echo "$element2" | tr '[:upper:]' '[:lower:]')
+          if [ ! "$el" == "$el2" ]
           then
             echo "[[${element2}]]" >> "md/${element}.md"
           fi
@@ -177,13 +180,15 @@ do
   # if word is not equal to file name, add a link
 
   # if not on the first line
-  if [[ "$LINES[0]" != "$OLDLINE" ]]
+  if [ "$LINES[0]" != "$OLDLINE" ]
   then
     for ((i=0;i<${#array[@]};i++))
     do
       if [ ! "${array[i]}" == "" ]
       then
-        if [ ! "${array[i]}" == "${FIRSTLINE[i]}" ]
+        el=$(echo "${array[i]}" | tr '[:upper:]' '[:lower:]')
+        el2=$(echo "${FIRSTLINE[i]}" | tr '[:upper:]' '[:lower:]')
+        if [ ! "$el" == "$el2" ]
         then
           echo "[[${array[i]}]]" >> "md/${FIRSTLINE[i]}.md"
         fi
