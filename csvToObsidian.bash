@@ -91,23 +91,23 @@ do
     # echo "${LINE:$i:1}"
     if [ "${LINE:$i:1}" == '"' ]
     then
-			if [ "$nocomma" == "1" ]
-			then
-			  nocomma=0
-			else
-			  nocomma=1
-			fi
+      if [ "$nocomma" == "1" ]
+      then
+        nocomma=0
+      else
+        nocomma=1
+      fi
     fi
     if [ "$nocomma" == "1" ] && [ "${LINE:$i:1}" == ',' ]
     then
-		  newstr="${newstr}~tlf~"
-		else
-		  newstr="${newstr}${LINE:$i:1}"
-		fi
+      newstr="${newstr}~tlf~"
+    else
+      newstr="${newstr}${LINE:$i:1}"
+    fi
   done
 
-	OLDLINE=$LINE
-	LINE=$newstr
+  OLDLINE=$LINE
+  LINE=$newstr
 
   # split current line into array
   IFS="," read -r -a array <<< "$LINE"
@@ -119,28 +119,28 @@ do
   do
     element="${array[a]}"
     # Restore the commas
-		newstr=$(sed -e "s/~tlf~/,/g" <<< "$element")
-		element=$newstr
+    newstr=$(sed -e "s/~tlf~/,/g" <<< "$element")
+    element=$newstr
 
-		# Remove outside quotes
-		newstr=$(sed -e "s/^\"//" <<< "$element")
-		element=$newstr
-		newstr=$(sed -e "s/\"$//" <<< "$element")
-		element=$newstr
+    # Remove outside quotes
+    newstr=$(sed -e "s/^\"//" <<< "$element")
+    element=$newstr
+    newstr=$(sed -e "s/\"$//" <<< "$element")
+    element=$newstr
 
-		# Restore single quotes
-		newstr=$(sed -e "s/\"\"/\"/" <<< "$element")
-		element=$newstr
+    # Restore single quotes
+    newstr=$(sed -e "s/\"\"/\"/" <<< "$element")
+    element=$newstr
 
-		# Change / 's to underscores
-		newstr=$(sed -e "s/\//_/" <<< "$element")
-		element=$newstr
+    # Change / 's to underscores
+    newstr=$(sed -e "s/\//_/" <<< "$element")
+    element=$newstr
 
 
-		array[a]="$element"
+    array[a]="$element"
 
-		if [ ! "$element" == "" ]
-		then
+    if [ ! "$element" == "" ]
+    then
       # echo "$element"
       # check if the file doesn't exist
       if [ ! -f "md/${element}.md" ]
@@ -158,14 +158,14 @@ do
 
   for element in "${array[@]}"
   do
-		if [ ! "$element" == "" ]
-		then
+    if [ ! "$element" == "" ]
+    then
       for element2 in "${array[@]}"
       do
         if [[ "$element" != "$element2" ]]
         then
-      		if [ ! "$element2" == "" ]
-	  	  	then
+          if [ ! "$element2" == "" ]
+          then
             echo "[[${element2}]]" >> "md/${element}.md"
           fi
         fi
@@ -181,10 +181,10 @@ do
   then
     for ((i=0;i<${#array[@]};i++))
     do
-  		if [ ! "${array[i]}" == "" ]
-			then
-				if [ "${array[i]}" != "${FIRSTLINE[i]}" ]
-				then
+      if [ ! "${array[i]}" == "" ]
+      then
+        if [ "${array[i]}" != "${FIRSTLINE[i]}" ]
+        then
           echo "[[${array[i]}]]" >> "md/${FIRSTLINE[i]}.md"
         fi
       fi
@@ -213,24 +213,24 @@ IFS=$'\n'
 # make some directories
 for ((i=0;i<${#FIRSTLINE[@]};i++))
 do
-	#echo "${FIRSTLINE[i]}"
+  #echo "${FIRSTLINE[i]}"
   mkdir "md/${FIRSTLINE[i]}"
 done
 
 # if the line isn't a directory, move the file
 for ((i=0;i<${#FIRSTLINE[@]};i++))
 do
-	# echo "${FIRSTLINE[i]}"
+  # echo "${FIRSTLINE[i]}"
   LINES=$(cat "md/${FIRSTLINE[i]}.md")
   for LINE in $LINES
   do
-		# echo $LINE
-		# strip the link markers
+    # echo $LINE
+    # strip the link markers
     newstr=$(sed -e "s/\[\[//g" <<< "$LINE")
     LINE=$(sed -e "s/\]\]//g" <<< "$newstr")
     if [ ! -d "md/$LINE" ]
     then
-			mv "md/${LINE}.md" "md/${FIRSTLINE[i]}/" 2>/dev/null
+      mv "md/${LINE}.md" "md/${FIRSTLINE[i]}/" 2>/dev/null
     fi
   done
 done
