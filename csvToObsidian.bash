@@ -1,4 +1,4 @@
-# /bin/bash
+#!/bin/bash
 
 #############################################################
 
@@ -39,6 +39,14 @@
 
 #############################################################
 
+# Enable by switching comments so 1 is the value
+# if you want to muck with the code for specific column behavior
+# see the if block for it below.
+
+COLUMN_LEVEL_CONTROL=0
+#COLUMN_LEVEL_CONTROL=1
+
+#############################################################
 
 FILENAME=$1
 
@@ -156,25 +164,73 @@ do
   # build horizontal links
   # if word is not equal to file name, add a link
 
-  for element in "${array[@]}"
-  do
-    if [ ! "$element" == "" ]
-    then
-      for element2 in "${array[@]}"
-      do
+  if [ "$COLUMN_LEVEL_CONTROL" == "0" ]
+  then
 
-        if [ ! "$element2" == "" ]
-        then
-          el=$(echo "$element" | tr '[:upper:]' '[:lower:]')
-          el2=$(echo "$element2" | tr '[:upper:]' '[:lower:]')
-          if [ ! "$el" == "$el2" ]
+    for element in "${array[@]}"
+    do
+      if [ ! "$element" == "" ]
+      then
+        for element2 in "${array[@]}"
+        do
+
+          if [ ! "$element2" == "" ]
           then
-            echo "[[${element2}]]" >> "md/${element}.md"
+            el=$(echo "$element" | tr '[:upper:]' '[:lower:]')
+            el2=$(echo "$element2" | tr '[:upper:]' '[:lower:]')
+            if [ ! "$el" == "$el2" ]
+            then
+              echo "[[${element2}]]" >> "md/${element}.md"
+            fi
           fi
-        fi
-      done
-    fi
-  done
+        done
+      fi
+    done
+
+  else
+
+    # Modify here if you want to play with column level control
+    # array is all elements in row
+    for ((x=0;x<${#array[@]};x++))
+    do
+      element="${array[x]}"
+      if [ ! "$element" == "" ]
+      then
+        for ((xx=0;xx<${#array[@]};xx++))
+        do
+          element2="${array[xx]}"
+
+          # echo "${x} ${element} : ${xx} ${element2}"
+
+          if [ ! "$element2" == "" ]
+          then
+            el=$(echo "$element" | tr '[:upper:]' '[:lower:]')
+            el2=$(echo "$element2" | tr '[:upper:]' '[:lower:]')
+            if [ ! "$el" == "$el2" ]; then
+
+              # first column only gets column 1
+              if [ "$x" == "0" ] && [ "$xx" == "1" ]; then
+                echo "[[${element2}]]" >> "md/${element}.md"
+              fi
+            
+              # second column gets everything
+              if [ "$x" == "1" ]; then
+                echo "[[${element2}]]" >> "md/${element}.md"
+              fi
+
+              # all other columns get everything but the first column
+              if [ ! "$x" == "0" ] && [ ! "$x" == 1 ] && [ ! "$xx" == "0" ]; then
+                echo "[[${element2}]]" >> "md/${element}.md"
+              fi
+
+            fi
+          fi
+        done
+      fi
+    done
+    # End modify here.
+  fi
+
 
   # build vertical links
   # if word is not equal to file name, add a link
